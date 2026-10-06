@@ -34,13 +34,13 @@ Once everything is in place, a run is a single quick check. Books that are fully
 
 ## Installation
 
-Download `argos_translate.zip` from the [latest release](../../releases/latest).
+Download `argostranslate-calibre-plugin.zip` from the [latest release](../../releases/latest).
 
 > **Note:** GitHub's green *Code → Download ZIP* button does **not** produce an installable plugin. It wraps the files in an extra folder, and calibre expects `__init__.py` at the root of the zip. Use the release asset, or install from source as shown below.
 
 ### From calibre's interface
 
-1. Open **Preferences → Plugins → Load plugin from file** and select `argos_translate.zip`.
+1. Open **Preferences → Plugins → Load plugin from file** and select `argostranslate-calibre-plugin.zip`.
 2. Accept the security warning, then choose where to place the button (main toolbar and/or the book context menu).
 3. Restart calibre.
 
@@ -49,7 +49,7 @@ You can also add or move the button later under **Preferences → Toolbars & men
 ### From the command line
 
 ```sh
-calibre-customize -a argos_translate.zip
+calibre-customize -a argostranslate-calibre-plugin.zip
 ```
 
 Restart calibre if it is running. The command-line mode (below) works immediately.
