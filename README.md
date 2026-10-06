@@ -144,7 +144,7 @@ The examples work the same in Windows `cmd` and PowerShell; only path separators
 ### Options
 
 | Option | Description |
-|---------|---------|
+|---|---|
 | `-t`, `--to CODE` | target language (required), e.g. `fr` |
 | `-f`, `--from CODE` | source language; default: read from each book's metadata |
 | `-m`, `--mode MODE` | `replace` (default) or `bilingual` |
@@ -155,7 +155,7 @@ The examples work the same in Windows `cmd` and PowerShell; only path separators
 | `--list` | list installed and downloadable language pairs, then exit |
 | `--no-download` | never download missing language models, fail instead |
 | `--no-cache` | neither read nor write the translation cache |
-| `--allow-changes` | allow installing argostranslate into an existing environment even if that changes packages already there (see [Using an existing virtual environment](#using-an-existing-virtual-environment)) |
+| `--allow-changes` | allow installing argostranslate into an existing environment even if that changes packages already there  |
 | `--device DEVICE` | `cpu`, `cuda` or `auto`; default: the GUI setting |
 | `--batch-size N` | segments per worker request; default: the GUI setting |
 
