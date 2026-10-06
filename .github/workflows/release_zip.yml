@@ -35,25 +35,25 @@ jobs:
           fi
       - name: Compile check
         run: python -m py_compile *.py
-      - name: Build argos_translate.zip
+      - name: Build argostranslate-calibre-plugin.zip
         run: |
-          git ls-files | grep -vE '^(\.github/|README\.md$|\.gitignore$|\.gitattributes$)' | zip -X -@ argos_translate.zip
-          unzip -l argos_translate.zip
+          git ls-files | grep -vE '^(\.github/|README\.md$|\.gitignore$|\.gitattributes$)' | zip -X -@ argostranslate-calibre-plugin.zip
+          unzip -l argostranslate-calibre-plugin.zip
           for required in __init__.py plugin-import-name-argos_translate.txt worker.py; do
-            unzip -Z1 argos_translate.zip | grep -qx "$required" || { echo "::error::$required missing from the zip root"; exit 1; }
+            unzip -Z1 argostranslate-calibre-plugin.zip | grep -qx "$required" || { echo "::error::$required missing from the zip root"; exit 1; }
           done
       - name: Keep the build as a workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: argos_translate
-          path: argos_translate.zip
+          name: argostranslate-calibre-plugin
+          path: argostranslate-calibre-plugin.zip
       - name: Attach the zip to the GitHub release
         if: github.ref_type == 'tag'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release upload "$GITHUB_REF_NAME" argos_translate.zip --clobber --repo "$GITHUB_REPOSITORY"
+            gh release upload "$GITHUB_REF_NAME" argostranslate-calibre-plugin.zip --clobber --repo "$GITHUB_REPOSITORY"
           else
-            gh release create "$GITHUB_REF_NAME" argos_translate.zip --title "$GITHUB_REF_NAME" --generate-notes --repo "$GITHUB_REPOSITORY"
+            gh release create "$GITHUB_REF_NAME" argostranslate-calibre-plugin.zip --title "$GITHUB_REF_NAME" --generate-notes --repo "$GITHUB_REPOSITORY"
           fi
