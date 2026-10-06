@@ -4,7 +4,7 @@ class ArgosTranslatePlugin(InterfaceActionBase):
     description = 'Translate EPUB/AZW3 books offline with Argos Translate'
     supported_platforms = ['windows', 'osx', 'linux']
     author = 'David'
-    version = (1, 0, 0)
+    version = (26, 10, 1)
     minimum_calibre_version = (6, 0, 0)
     actual_plugin = 'calibre_plugins.argos_translate.ui:ArgosTranslateAction'
     def is_customizable(self)->bool:

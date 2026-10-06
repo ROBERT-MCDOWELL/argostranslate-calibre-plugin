@@ -1,0 +1,59 @@
+name: Release plugin
+on:
+  push:
+    tags: ['v*']
+  release:
+    types: [published]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check that the tag matches the plugin version
+        if: github.ref_type == 'tag'
+        run: |
+          version=$(python - <<'EOF'
+          import ast
+          tree = ast.parse(open('__init__.py', encoding='utf-8').read())
+          node = next(n.value for n in ast.walk(tree) if isinstance(n, ast.Assign) and any(getattr(t, 'id', None) == 'version' for t in n.targets))
+          print('.'.join(str(part) for part in ast.literal_eval(node)))
+          EOF
+          )
+          echo "plugin version: $version, tag: $GITHUB_REF_NAME"
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::tag $GITHUB_REF_NAME does not match version = ($version) in __init__.py, update one of them"
+            exit 1
+          fi
+      - name: Compile check
+        run: python -m py_compile *.py
+      - name: Build argos_translate.zip
+        run: |
+          git ls-files | grep -vE '^(\.github/|README\.md$|\.gitignore$|\.gitattributes$)' | zip -X -@ argos_translate.zip
+          unzip -l argos_translate.zip
+          for required in __init__.py plugin-import-name-argos_translate.txt worker.py; do
+            unzip -Z1 argos_translate.zip | grep -qx "$required" || { echo "::error::$required missing from the zip root"; exit 1; }
+          done
+      - name: Keep the build as a workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: argos_translate
+          path: argos_translate.zip
+      - name: Attach the zip to the GitHub release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" argos_translate.zip --clobber --repo "$GITHUB_REPOSITORY"
+          else
+            gh release create "$GITHUB_REF_NAME" argos_translate.zip --title "$GITHUB_REF_NAME" --generate-notes --repo "$GITHUB_REPOSITORY"
+          fi
