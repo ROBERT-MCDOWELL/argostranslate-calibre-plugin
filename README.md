@@ -2,9 +2,9 @@
 
 ![calibre 6.0+](https://img.shields.io/badge/calibre-6.0%2B-blue)
 ![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
-![License: GPL v3](https://img.shields.io/badge/license-GPLv3-green)
+![License: MIT](https://img.shields.io/badge/license-MIT-green)
 
-Translate EPUB and AZW3 books **offline**, inside calibre, with [Argos Translate](https://github.com/argosopentech/argos-translate).
+Translate EPUB and AZW3 books **offline** between 50 languages, inside calibre, with [Argos Translate](https://github.com/argosopentech/argos-translate).
 Use it from calibre's interface or from the command line. It sets itself up the first time it runs.
 
 ## Features
@@ -21,29 +21,9 @@ Use it from calibre's interface or from the command line. It sets itself up the 
 
 ## How it works
 
-calibre ships its own Python, which can't load argostranslate's compiled libraries. The plugin therefore runs inside calibre, while the translation engine runs as a separate process in its own Python environment, connected through a pipe. Before each conversion, the plugin checks this chain and installs only what is missing:
+calibre ships its own Python, which can't load argostranslate's compiled libraries. The plugin therefore runs inside calibre, while the translation engine runs as a separate process in its own Python environment, connected through a pipe. Before each conversion, the plugin checks the Python environment, argostranslate and the language model for the requested pair, and installs only what is missing, fetching uv first if it needs it.
 
-```mermaid
-flowchart TD
-    A[Conversion starts] --> B{All text already<br>in the cache?}
-    B -- yes --> W[Write the translated book]
-    B -- no --> C{Virtual environment<br>active?}
-    C -- yes --> E[Use it]
-    C -- no --> D{./python_env<br>exists?}
-    D -- yes --> E
-    D -- no --> U[Get uv, create ./python_env<br>with Python 3.12]
-    U --> E
-    E --> F{argostranslate<br>installed?}
-    F -- no --> G[Install it with uv]
-    F -- yes --> H{Language pair<br>installed?}
-    G --> H
-    H -- no --> I[Download the model,<br>direct or via English]
-    H -- yes --> T[Translate]
-    I --> T
-    T --> W
-```
-
-Once everything is in place, a run is a single quick check. Books that are fully cached skip the chain entirely and never touch the network.
+Once everything is in place, a run is a single quick check. Books that are fully cached skip these checks entirely and never touch the network.
 
 ## Requirements
 
@@ -55,6 +35,8 @@ Once everything is in place, a run is a single quick check. Books that are fully
 ## Installation
 
 Download `argos_translate.zip` from the [latest release](../../releases/latest).
+
+> **Note:** GitHub's green *Code → Download ZIP* button does **not** produce an installable plugin. It wraps the files in an extra folder, and calibre expects `__init__.py` at the root of the zip. Use the release asset, or install from source as shown below.
 
 ### From calibre's interface
 
@@ -75,8 +57,8 @@ Restart calibre if it is running. The command-line mode (below) works immediatel
 ### From source
 
 ```sh
-git clone <this repository>
-cd <repository folder>
+git clone https://github.com/ROBERT-MCDOWELL/argostranslate-calibre-plugin.git
+cd argostranslate-calibre-plugin
 calibre-customize -b .
 ```
 
@@ -220,6 +202,7 @@ In the GUI, selecting several books queues one job per book; the jobs run one af
 
 ## Languages
 
+- Argos Translate currently covers **50 languages** with about 100 models. Nearly all of them translate to or from English, so any pair between those 50 languages works, through English where needed.
 - Use Argos language codes, mostly two-letter ISO 639-1 codes such as `en`, `fr`, `de`, `es`, `zh`. `--list` or *Refresh language list* shows what is installed and what can be downloaded.
 - When no direct model exists for a pair, the plugin translates through English (e.g. `de → en → fr`) and downloads only the missing step. These two-step translations are of somewhat lower quality.
 - The source language comes from the book's metadata. Use `--from`, or pick it in the dialog, when a book's metadata is wrong or missing.
@@ -285,6 +268,6 @@ To iterate on the code, run `calibre-customize -b . && calibre-debug -g`.
 
 ## License
 
-GPL v3. This plugin runs inside calibre, which is GPL v3 licensed.
+Released under the MIT License, see [LICENSE](LICENSE).
 
 Built on [calibre](https://calibre-ebook.com), [Argos Translate](https://github.com/argosopentech/argos-translate), [CTranslate2](https://github.com/OpenNMT/CTranslate2) and [uv](https://github.com/astral-sh/uv).
