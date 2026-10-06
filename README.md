@@ -143,8 +143,8 @@ The examples work the same in Windows `cmd` and PowerShell; only path separators
 
 ### Options
 
-|          Option          |    Description    |
-|---|---|
+| Option | Description |
+|---------|---------|
 | `-t`, `--to CODE` | target language (required), e.g. `fr` |
 | `-f`, `--from CODE` | source language; default: read from each book's metadata |
 | `-m`, `--mode MODE` | `replace` (default) or `bilingual` |
